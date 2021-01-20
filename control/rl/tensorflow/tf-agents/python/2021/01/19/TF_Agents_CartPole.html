@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TF-Agents-CartPole | Kobus Esterhuysen — Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TF-Agents-CartPole" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Reinforcement Learning (RL) to control the balancing of a pole on a moving cart" />
+<meta property="og:description" content="Reinforcement Learning (RL) to control the balancing of a pole on a moving cart" />
+<meta property="og:site_name" content="Kobus Esterhuysen — Data Science Blog" />
+<meta property="og:image" content="/blog/images/graphical_representation_of_rl.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-19T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"/blog/control/rl/tensorflow/tf-agents/python/2021/01/19/TF_Agents_CartPole.html","@type":"BlogPosting","headline":"TF-Agents-CartPole","dateModified":"2021-01-19T00:00:00-06:00","datePublished":"2021-01-19T00:00:00-06:00","image":"/blog/images/graphical_representation_of_rl.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/control/rl/tensorflow/tf-agents/python/2021/01/19/TF_Agents_CartPole.html"},"description":"Reinforcement Learning (RL) to control the balancing of a pole on a moving cart","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="/blog/feed.xml" title="Kobus Esterhuysen --- Data Science Blog" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Kobus Esterhuysen --- Data Science Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TF-Agents-CartPole</h1><p class="page-description">Reinforcement Learning (RL) to control the balancing of a pole on a moving cart</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-19T00:00:00-06:00" itemprop="datePublished">
+        Jan 19, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      20 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#Control">Control</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#RL">RL</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#TensorFlow">TensorFlow</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#TF-Agents">TF-Agents</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#Python">Python</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#1.-Introduction">1. Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#2.-Purpose">2. Purpose </a></li>
+<li class="toc-entry toc-h2"><a href="#3.-TF-Agents-Setup">3. TF-Agents Setup </a></li>
+<li class="toc-entry toc-h2"><a href="#4.-Hyperparameters">4. Hyperparameters </a></li>
+<li class="toc-entry toc-h2"><a href="#5.-Graphical-Representation-of-the-Problem">5. Graphical Representation of the Problem </a></li>
+<li class="toc-entry toc-h2"><a href="#6.-Environment">6. Environment </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Input-to-Environment">Input to Environment </a></li>
+<li class="toc-entry toc-h3"><a href="#Evolution-of-the-Environment">Evolution of the Environment </a></li>
+<li class="toc-entry toc-h3"><a href="#Output-from-Environment">Output from Environment </a></li>
+<li class="toc-entry toc-h3"><a href="#Demonstrate-the-evolution-of-the-environment">Demonstrate the evolution of the environment </a></li>
+<li class="toc-entry toc-h3"><a href="#Convert-environments-to-TensorFlow">Convert environments to TensorFlow </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#7.-Agent">7. Agent </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#QNetwork">QNetwork </a></li>
+<li class="toc-entry toc-h3"><a href="#DqnAgent">DqnAgent </a></li>
+<li class="toc-entry toc-h3"><a href="#Policies">Policies </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#8.-Metrics-and-Evaluation">8. Metrics and Evaluation </a></li>
+<li class="toc-entry toc-h2"><a href="#9.-Replay-Buffer">9. Replay Buffer </a></li>
+<li class="toc-entry toc-h2"><a href="#10.-Data-Collection">10. Data Collection </a></li>
+<li class="toc-entry toc-h2"><a href="#11.-Training-the-agent">11. Training the agent </a></li>
+<li class="toc-entry toc-h2"><a href="#Visualization">Visualization </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Plots">Plots </a></li>
+<li class="toc-entry toc-h3"><a href="#Videos">Videos </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-01-19-TF_Agents_CartPole.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="1.-Introduction">
+<a class="anchor" href="#1.-Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Introduction<a class="anchor-link" href="#1.-Introduction"> </a>
+</h2>
+<p>The cart-pole problem can be considered as the "Hello World" problem of Reinforcement Learning (RL). It was described by <a href="http://www.derongliu.org/adp/adp-cdrom/Barto1983.pdf">Barto (1983)</a>. The physics of the system is as follows:</p>
+<ul>
+<li>All motion happens in a vertical plane</li>
+<li>A hinged pole is attached to a cart</li>
+<li>The cart slides horizontally on a track in an effort to balance the pole vertically</li>
+<li>The system has four state variables:</li>
+</ul>
+<p>$x$: displacement of the cart</p>
+<p>$\theta$: vertical angle on the pole</p>
+<p>$\dot{x}$: velocity of the cart</p>
+<p>$\dot{\theta}$: angular velocity of the pole</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.-Purpose">
+<a class="anchor" href="#2.-Purpose" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Purpose<a class="anchor-link" href="#2.-Purpose"> </a>
+</h2>
+<p>The purpose of our activity in this blog post is to construct and train an entity, let's call it a <em>controller</em>, that can manage the horizontal motions of the cart so that the pole remains as close to vertical as possible. The controlled entity is, of course, the <em>cart and pole</em> system.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-TF-Agents-Setup">
+<a class="anchor" href="#3.-TF-Agents-Setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. TF-Agents Setup<a class="anchor-link" href="#3.-TF-Agents-Setup"> </a>
+</h2>
+<p>We will use the Tensorflow TF-Agents framework. In addition, this notebook will need to run in Google Colab.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>sudo apt-get install -y xvfb ffmpeg
+<span class="o">!</span>pip install <span class="s1">'imageio==2.4.0'</span>
+<span class="o">!</span>pip install pyvirtualdisplay
+<span class="o">!</span>pip install tf-agents
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+ffmpeg is already the newest version (7:3.4.8-0ubuntu0.2).
+xvfb is already the newest version (2:1.19.6-1ubuntu4.8).
+0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.
+Requirement already satisfied: imageio==2.4.0 in /usr/local/lib/python3.6/dist-packages (2.4.0)
+Requirement already satisfied: pillow in /usr/local/lib/python3.6/dist-packages (from imageio==2.4.0) (7.0.0)
+Requirement already satisfied: numpy in /usr/local/lib/python3.6/dist-packages (from imageio==2.4.0) (1.19.5)
+Requirement already satisfied: pyvirtualdisplay in /usr/local/lib/python3.6/dist-packages (2.0)
+Requirement already satisfied: EasyProcess in /usr/local/lib/python3.6/dist-packages (from pyvirtualdisplay) (0.3)
+Requirement already satisfied: tf-agents in /usr/local/lib/python3.6/dist-packages (0.7.1)
+Requirement already satisfied: gym&gt;=0.17.0 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (0.17.3)
+Requirement already satisfied: pillow&gt;=7.0.0 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (7.0.0)
+Requirement already satisfied: typing-extensions&gt;=3.7.4.3 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (3.7.4.3)
+Requirement already satisfied: cloudpickle&gt;=1.3 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (1.3.0)
+Requirement already satisfied: wrapt&gt;=1.11.1 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (1.12.1)
+Requirement already satisfied: protobuf&gt;=3.11.3 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (3.12.4)
+Requirement already satisfied: numpy&gt;=1.13.3 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (1.19.5)
+Requirement already satisfied: tensorflow-probability&gt;=0.12.1 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (0.12.1)
+Requirement already satisfied: gin-config&gt;=0.4.0 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (0.4.0)
+Requirement already satisfied: absl-py&gt;=0.6.1 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (0.10.0)
+Requirement already satisfied: six&gt;=1.10.0 in /usr/local/lib/python3.6/dist-packages (from tf-agents) (1.15.0)
+Requirement already satisfied: scipy in /usr/local/lib/python3.6/dist-packages (from gym&gt;=0.17.0-&gt;tf-agents) (1.4.1)
+Requirement already satisfied: pyglet&lt;=1.5.0,&gt;=1.4.0 in /usr/local/lib/python3.6/dist-packages (from gym&gt;=0.17.0-&gt;tf-agents) (1.5.0)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.6/dist-packages (from protobuf&gt;=3.11.3-&gt;tf-agents) (51.1.1)
+Requirement already satisfied: decorator in /usr/local/lib/python3.6/dist-packages (from tensorflow-probability&gt;=0.12.1-&gt;tf-agents) (4.4.2)
+Requirement already satisfied: dm-tree in /usr/local/lib/python3.6/dist-packages (from tensorflow-probability&gt;=0.12.1-&gt;tf-agents) (0.1.5)
+Requirement already satisfied: gast&gt;=0.3.2 in /usr/local/lib/python3.6/dist-packages (from tensorflow-probability&gt;=0.12.1-&gt;tf-agents) (0.3.3)
+Requirement already satisfied: future in /usr/local/lib/python3.6/dist-packages (from pyglet&lt;=1.5.0,&gt;=1.4.0-&gt;gym&gt;=0.17.0-&gt;tf-agents) (0.16.0)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">imageio</span>
+<span class="kn">import</span> <span class="nn">IPython</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">PIL.Image</span>
+<span class="kn">import</span> <span class="nn">pyvirtualdisplay</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tf_agents.agents.dqn</span> <span class="kn">import</span> <span class="n">dqn_agent</span>
+<span class="kn">from</span> <span class="nn">tf_agents.drivers</span> <span class="kn">import</span> <span class="n">dynamic_step_driver</span>
+<span class="kn">from</span> <span class="nn">tf_agents.environments</span> <span class="kn">import</span> <span class="n">suite_gym</span>
+<span class="kn">from</span> <span class="nn">tf_agents.environments</span> <span class="kn">import</span> <span class="n">tf_py_environment</span>
+<span class="kn">from</span> <span class="nn">tf_agents.eval</span> <span class="kn">import</span> <span class="n">metric_utils</span>
+<span class="kn">from</span> <span class="nn">tf_agents.metrics</span> <span class="kn">import</span> <span class="n">tf_metrics</span>
+<span class="kn">from</span> <span class="nn">tf_agents.networks</span> <span class="kn">import</span> <span class="n">q_network</span>
+<span class="kn">from</span> <span class="nn">tf_agents.policies</span> <span class="kn">import</span> <span class="n">random_tf_policy</span>
+<span class="kn">from</span> <span class="nn">tf_agents.replay_buffers</span> <span class="kn">import</span> <span class="n">tf_uniform_replay_buffer</span>
+<span class="kn">from</span> <span class="nn">tf_agents.trajectories</span> <span class="kn">import</span> <span class="n">trajectory</span>
+<span class="kn">from</span> <span class="nn">tf_agents.utils</span> <span class="kn">import</span> <span class="n">common</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tf</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">VERSION</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>'2.4.0'</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The following is needed for rendering a virtual display:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tf</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">enable_v2_behavior</span><span class="p">()</span>
+<span class="n">display</span> <span class="o">=</span> <span class="n">pyvirtualdisplay</span><span class="o">.</span><span class="n">Display</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1400</span><span class="p">,</span> <span class="mi">900</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># ![Figure 1 Graphical Representation](/content/gdrive/My Drive/RL/TF-Agents/blog_posts/TF-Agents-CartPole/graphical_representation_of_rl.png)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">base_dir</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>'/content/gdrive/My Drive/RL/TF-Agents/blog_posts/TF-Agents-CartPole/'</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="4.-Hyperparameters">
+<a class="anchor" href="#4.-Hyperparameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Hyperparameters<a class="anchor-link" href="#4.-Hyperparameters"> </a>
+</h2>
+<p>Here we specify all the hyperparameters for the problem:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">NUM_ITERATIONS</span> <span class="o">=</span> <span class="mi">20000</span>
+
+<span class="n">INITIAL_COLLECT_STEPS</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">COLLECT_STEPS_PER_ITERATION</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">REPLAY_BUFFER_MAX_LENGTH</span> <span class="o">=</span> <span class="mi">100000</span>
+
+<span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">LOG_INTERVAL</span> <span class="o">=</span> <span class="mi">200</span>
+
+<span class="n">NUM_EVAL_EPISODES</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">EVAL_INTERVAL</span> <span class="o">=</span> <span class="mi">1000</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="5.-Graphical-Representation-of-the-Problem">
+<a class="anchor" href="#5.-Graphical-Representation-of-the-Problem" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Graphical Representation of the Problem<a class="anchor-link" href="#5.-Graphical-Representation-of-the-Problem"> </a>
+</h2>
+<p>We will work with a graphical representation of our cart-and-pole problem, rather than to just ramble on with words. This will enhance the description. The graphic will also include some TF-Agents specifics. Here is the representation:</p>
+<p><img src="/blog/images/copied_from_nb/../images/graphical_representation_of_rl.png" alt="Figure 1 Graphical Representation"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="6.-Environment">
+<a class="anchor" href="#6.-Environment" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Environment<a class="anchor-link" href="#6.-Environment"> </a>
+</h2>
+<p>Let's start with the controller. In Reinforcement Learning, the controlled entity is known as an <strong>environment</strong>. The TF-Agents framework contain some ready to use environments that can be created in TF-Agents using the <code>tf_agents.environments</code> suites. Fortunately, it makes access to the cart-and-pole environment (setup by OpenAI Gym) easy. Next, we load the cart-and-pole environment from the OpenAI Gym suite.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env_name</span> <span class="o">=</span> <span class="s1">'CartPole-v0'</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">suite_gym</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">env_name</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can render this environment to see how it looks. A free-swinging pole is attached to a cart.  The goal is to move the cart right or left in order to keep the pole pointing up. To verify, we can inspect our loaded environment with:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Input-to-Environment">
+<a class="anchor" href="#Input-to-Environment" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input to Environment<a class="anchor-link" href="#Input-to-Environment"> </a>
+</h3>
+<p>The specification of inputs to the environment is provided by the <code>env.action_spec</code> method:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">action_spec</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>BoundedArraySpec(shape=(), dtype=dtype('int64'), name='action', minimum=0, maximum=1)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>shape</code> specifies the structure of the input which is a scalar in this case. <code>dtype</code> is the data type which is an <code>int64</code>. The <code>minimum</code> value of the action is <code>0</code> and the <code>maximum</code> is <code>1</code>. We will use the convention that the <code>action</code> on the cart is as follows:</p>
+<ul>
+<li>
+<code>0</code> means LEFT</li>
+<li>
+<code>1</code> means RIGHT</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Evolution-of-the-Environment">
+<a class="anchor" href="#Evolution-of-the-Environment" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evolution of the Environment<a class="anchor-link" href="#Evolution-of-the-Environment"> </a>
+</h3>
+<p>The arrival of an <code>action</code> at the input of the environment leads to the update of its state. This is how the environment evolves. To advance the state of the environment, the <code>environment.step</code> method takes an input <code>action</code> and returns a <code>TimeStep</code> tuple containing the next observation of the environment and the reward for the action.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Output-from-Environment">
+<a class="anchor" href="#Output-from-Environment" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output from Environment<a class="anchor-link" href="#Output-from-Environment"> </a>
+</h3>
+<p>The specification of output from the environment is provided by the <code>env.time_step_spec</code> method:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>TimeStep(step_type=ArraySpec(shape=(), dtype=dtype('int32'), name='step_type'), reward=ArraySpec(shape=(), dtype=dtype('float32'), name='reward'), discount=BoundedArraySpec(shape=(), dtype=dtype('float32'), name='discount', minimum=0.0, maximum=1.0), observation=BoundedArraySpec(shape=(4,), dtype=dtype('float32'), name='observation', minimum=[-4.8000002e+00 -3.4028235e+38 -4.1887903e-01 -3.4028235e+38], maximum=[4.8000002e+00 3.4028235e+38 4.1887903e-01 3.4028235e+38]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This specification has the following fields:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">()</span><span class="o">.</span><span class="n">_fields</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>('step_type', 'reward', 'discount', 'observation')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>step_type</code> indicates whether a step is the first step, a middle step, or the last step in an episode:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">()</span><span class="o">.</span><span class="n">step_type</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>ArraySpec(shape=(), dtype=dtype('int32'), name='step_type')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>reward</code> is a scalar which conveys the reward from the environment:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">()</span><span class="o">.</span><span class="n">reward</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>ArraySpec(shape=(), dtype=dtype('float32'), name='reward')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>discount</code> is a factor that modifies the <code>reward</code>:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">()</span><span class="o">.</span><span class="n">discount</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>BoundedArraySpec(shape=(), dtype=dtype('float32'), name='discount', minimum=0.0, maximum=1.0)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>observation</code> is the observable state of the environment:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">()</span><span class="o">.</span><span class="n">observation</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>BoundedArraySpec(shape=(4,), dtype=dtype('float32'), name='observation', minimum=[-4.8000002e+00 -3.4028235e+38 -4.1887903e-01 -3.4028235e+38], maximum=[4.8000002e+00 3.4028235e+38 4.1887903e-01 3.4028235e+38])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this case we have a vector with 4 elements - one each for the cart displacement, cart velocity, pole angle, and pole angular velocity.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Demonstrate-the-evolution-of-the-environment">
+<a class="anchor" href="#Demonstrate-the-evolution-of-the-environment" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demonstrate the evolution of the environment<a class="anchor-link" href="#Demonstrate-the-evolution-of-the-environment"> </a>
+</h3>
+<p>Let's submit 10 <code>RIGHT</code> actions to the environment, just for fun:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>It is interesting to see an agent actually performing a task in an environment.</p>
+<p>First, create a function to embed videos in the notebook.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">embed_mp4</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+  <span class="sd">"""Embeds an mp4 file in the notebook."""</span>
+  <span class="n">video</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">'rb'</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+  <span class="n">b64</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
+  <span class="n">tag</span> <span class="o">=</span> <span class="s1">'''</span>
+<span class="s1">  &lt;video width="640" height="480" controls&gt;</span>
+<span class="s1">    &lt;source src="data:video/mp4;base64,</span><span class="si">{0}</span><span class="s1">" type="video/mp4"&gt;</span>
+<span class="s1">  Your browser does not support the video tag.</span>
+<span class="s1">  &lt;/video&gt;'''</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b64</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+  <span class="k">return</span> <span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">HTML</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now iterate through a few episodes of the Cartpole game with the agent. The underlying Python environment (the one "inside" the TensorFlow environment wrapper) provides a <code>render()</code> method, which outputs an image of the environment state. These can be collected into a video.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">create_video</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+  <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">".mp4"</span>
+  <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+  <span class="k">with</span> <span class="n">imageio</span><span class="o">.</span><span class="n">get_writer</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">)</span> <span class="k">as</span> <span class="n">video</span><span class="p">:</span>
+    <span class="n">video</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+      <span class="n">tstep</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">);</span> <span class="nb">print</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
+      <span class="n">video</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+  <span class="k">return</span> <span class="n">embed_mp4</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">action</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span> <span class="c1">#move RIGHT action</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We will use two environments: one for training and one for evaluation.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_py_env</span> <span class="o">=</span> <span class="n">suite_gym</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">env_name</span><span class="p">)</span>
+<span class="n">eval_py_env</span> <span class="o">=</span> <span class="n">suite_gym</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">env_name</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Convert-environments-to-TensorFlow">
+<a class="anchor" href="#Convert-environments-to-TensorFlow" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convert environments to TensorFlow<a class="anchor-link" href="#Convert-environments-to-TensorFlow"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The Cartpole environment, like most environments, is written in pure Python. This is converted to TensorFlow using the <code>TFPyEnvironment</code> wrapper.</p>
+<p>The original environment's API uses Numpy arrays. The <code>TFPyEnvironment</code> converts these to <code>Tensors</code> to make it compatible with Tensorflow agents and policies.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_env</span> <span class="o">=</span> <span class="n">tf_py_environment</span><span class="o">.</span><span class="n">TFPyEnvironment</span><span class="p">(</span><span class="n">train_py_env</span><span class="p">)</span>
+<span class="n">eval_env</span> <span class="o">=</span> <span class="n">tf_py_environment</span><span class="o">.</span><span class="n">TFPyEnvironment</span><span class="p">(</span><span class="n">eval_py_env</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="7.-Agent">
+<a class="anchor" href="#7.-Agent" aria-hidden="true"><span class="octicon octicon-link"></span></a>7. Agent<a class="anchor-link" href="#7.-Agent"> </a>
+</h2>
+<p>The controller in our problem is the algorithm used to solve the problem. In RL parlance the controller is known as an <code>Agent</code>. TF-Agents provides standard implementations of a variety of <code>Agents</code>, including:</p>
+<ul>
+<li><a href="https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf">DQN</a></li>
+<li><a href="https://www-anw.cs.umass.edu/~barto/courses/cs687/williams92simple.pdf">REINFORCE</a></li>
+<li><a href="https://arxiv.org/pdf/1509.02971.pdf">DDPG</a></li>
+<li><a href="https://arxiv.org/pdf/1802.09477.pdf">TD3</a></li>
+<li><a href="https://arxiv.org/abs/1707.06347">PPO</a></li>
+<li>
+<a href="https://arxiv.org/abs/1801.01290">SAC</a>.</li>
+</ul>
+<p>For our problem we will use the DQN agent. The DQN agent can be used in any environment which has a discrete action space.</p>
+<p>The fundamental problem for an Agent is how to find the next best action to submit to the environment. In the case of a DQN Agent the agent makes use of a <code>QNetwork</code>, which is a neural network model that can learn to predict <code>QValues</code> (expected returns) for all actions, given an observation from the environment. By inspecting the <code>QValues</code>, the agent can decide on the best next action.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="QNetwork">
+<a class="anchor" href="#QNetwork" aria-hidden="true"><span class="octicon octicon-link"></span></a>QNetwork<a class="anchor-link" href="#QNetwork"> </a>
+</h3>
+<p>We use <code>tf_agents.networks.q_network</code> to create a <code>QNetwork</code>, passing in the <code>observation_spec</code>, <code>action_spec</code>, and a tuple <code>fc_layer_params</code> describing the number and size of the model's hidden layers. Each value in the tuple specifies the number of neurons for that hidden layer:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fc_layer_params</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="p">,)</span>
+<span class="n">q_net</span> <span class="o">=</span> <span class="n">q_network</span><span class="o">.</span><span class="n">QNetwork</span><span class="p">(</span>
+    <span class="n">input_tensor_spec</span><span class="o">=</span> <span class="n">train_env</span><span class="o">.</span><span class="n">observation_spec</span><span class="p">(),</span> 
+    <span class="n">action_spec</span><span class="o">=</span>       <span class="n">train_env</span><span class="o">.</span><span class="n">action_spec</span><span class="p">(),</span> 
+    <span class="n">fc_layer_params</span><span class="o">=</span>   <span class="n">fc_layer_params</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="DqnAgent">
+<a class="anchor" href="#DqnAgent" aria-hidden="true"><span class="octicon octicon-link"></span></a>DqnAgent<a class="anchor-link" href="#DqnAgent"> </a>
+</h3>
+<p>We now use <code>tf_agents.agents.dqn.dqn_agent</code> to instantiate a <code>DqnAgent</code>. In addition to the <code>time_step_spec</code>, <code>action_spec</code> and the QNetwork, the agent constructor also requires an optimizer (in this case, <code>AdamOptimizer</code>), a loss function, and an integer step counter.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LEARNING_RATE</span><span class="p">)</span>
+<span class="n">train_step_counter</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">dqn_agent</span><span class="o">.</span><span class="n">DqnAgent</span><span class="p">(</span>
+    <span class="n">time_step_spec</span><span class="o">=</span>     <span class="n">train_env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">(),</span>
+    <span class="n">action_spec</span><span class="o">=</span>        <span class="n">train_env</span><span class="o">.</span><span class="n">action_spec</span><span class="p">(),</span>
+    <span class="n">q_network</span><span class="o">=</span>          <span class="n">q_net</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span>          <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">td_errors_loss_fn</span><span class="o">=</span>  <span class="n">common</span><span class="o">.</span><span class="n">element_wise_squared_loss</span><span class="p">,</span>
+    <span class="n">train_step_counter</span><span class="o">=</span> <span class="n">train_step_counter</span><span class="p">)</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Policies">
+<a class="anchor" href="#Policies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Policies<a class="anchor-link" href="#Policies"> </a>
+</h3>
+<p>A policy defines the way an agent acts relative to the environment. The goal of reinforcement learning is to train the underlying model until the policy produces the desired outcome.</p>
+<p>In this problem:</p>
+<ul>
+<li>The desired outcome is keeping the pole balanced vertically over the cart</li>
+<li>The policy returns an action (LEFT or RIGHT) for each <code>TimeStep</code>'s <code>observation</code>
+</li>
+</ul>
+<p>Agents contain two policies:</p>
+<ul>
+<li>
+<code>agent.policy</code> — The main policy that is used for evaluation and deployment.</li>
+<li>
+<code>agent.collect_policy</code> — A second policy that is used for data collection.</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">eval_policy</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">policy</span>
+<span class="n">eval_policy</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;tf_agents.policies.greedy_policy.GreedyPolicy at 0x7f1cdb320b00&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">collect_policy</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">collect_policy</span>
+<span class="n">collect_policy</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;tf_agents.policies.epsilon_greedy_policy.EpsilonGreedyPolicy at 0x7f1cdb3209e8&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Policies can be created independently of agents. For example, use <code>tf_agents.policies.random_tf_policy</code> to create a policy which will randomly select an action for each <code>time_step</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">random_policy</span> <span class="o">=</span> <span class="n">random_tf_policy</span><span class="o">.</span><span class="n">RandomTFPolicy</span><span class="p">(</span>
+    <span class="n">time_step_spec</span><span class="o">=</span> <span class="n">train_env</span><span class="o">.</span><span class="n">time_step_spec</span><span class="p">(),</span> 
+    <span class="n">action_spec</span><span class="o">=</span>    <span class="n">train_env</span><span class="o">.</span><span class="n">action_spec</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To get an action from a policy, call the <code>policy.action(tstep)</code> method. The <code>tstep</code> of type <code>TimeStep</code> contains the observation from the environment. This method returns a <code>PolicyStep</code>, which is a named tuple with three components:</p>
+<ul>
+<li>
+<code>action</code> — the action to be taken (in this case, <code>0</code> or <code>1</code>)</li>
+<li>
+<code>state</code> — used for stateful (that is, RNN-based) policies</li>
+<li>
+<code>info</code> — auxiliary data, such as log probabilities of actions</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's create an example environment and setup a random policy:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">example_environment</span> <span class="o">=</span> <span class="n">tf_py_environment</span><span class="o">.</span><span class="n">TFPyEnvironment</span><span class="p">(</span>
+    <span class="n">suite_gym</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'CartPole-v0'</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We reset this environment:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tstep</span> <span class="o">=</span> <span class="n">example_environment</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">tstep</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>TimeStep(step_type=&lt;tf.Tensor: shape=(1,), dtype=int32, numpy=array([0], dtype=int32)&gt;, reward=&lt;tf.Tensor: shape=(1,), dtype=float32, numpy=array([0.], dtype=float32)&gt;, discount=&lt;tf.Tensor: shape=(1,), dtype=float32, numpy=array([1.], dtype=float32)&gt;, observation=&lt;tf.Tensor: shape=(1, 4), dtype=float32, numpy=
+array([[ 0.04777068, -0.02450945, -0.03095539, -0.01279974]],
+      dtype=float32)&gt;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tstep</span><span class="o">.</span><span class="n">_fields</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>('step_type', 'reward', 'discount', 'observation')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tstep</span><span class="o">.</span><span class="n">step_type</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tstep</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tstep</span><span class="o">.</span><span class="n">discount</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tstep</span><span class="o">.</span><span class="n">observation</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>tf.Tensor([0], shape=(1,), dtype=int32)
+tf.Tensor([0.], shape=(1,), dtype=float32)
+tf.Tensor([1.], shape=(1,), dtype=float32)
+tf.Tensor([[ 0.04777068 -0.02450945 -0.03095539 -0.01279974]], shape=(1, 4), dtype=float32)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we find the <code>PolicyStep</code> from which the next <code>action</code> can be found:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pstep</span> <span class="o">=</span> <span class="n">random_policy</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
+<span class="n">pstep</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>PolicyStep(action=&lt;tf.Tensor: shape=(1,), dtype=int64, numpy=array([0])&gt;, state=(), info=())</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pstep</span><span class="o">.</span><span class="n">_fields</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>('action', 'state', 'info')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pstep</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pstep</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pstep</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>tf.Tensor([0], shape=(1,), dtype=int64)
+()
+()
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="8.-Metrics-and-Evaluation">
+<a class="anchor" href="#8.-Metrics-and-Evaluation" aria-hidden="true"><span class="octicon octicon-link"></span></a>8. Metrics and Evaluation<a class="anchor-link" href="#8.-Metrics-and-Evaluation"> </a>
+</h2>
+<p>The most common metric used to evaluate a policy is the <strong>average return</strong>. The return is the sum of rewards obtained while running a policy in an environment for an episode. Several episodes are run, creating an average return.</p>
+<p>The following function computes the average return of a policy, given the policy, environment, and a number of episodes.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">compute_avg_return</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">pol</span><span class="p">,</span> <span class="n">num_episodes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+  <span class="n">total_return</span> <span class="o">=</span> <span class="mf">0.0</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_episodes</span><span class="p">):</span>
+    <span class="n">tstep</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">episode_return</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">tstep</span><span class="o">.</span><span class="n">is_last</span><span class="p">():</span>
+      <span class="n">pstep</span> <span class="o">=</span> <span class="n">pol</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
+      <span class="n">tstep</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">pstep</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+      <span class="n">episode_return</span> <span class="o">+=</span> <span class="n">tstep</span><span class="o">.</span><span class="n">reward</span>
+    <span class="n">total_return</span> <span class="o">+=</span> <span class="n">episode_return</span>
+  <span class="n">avg_return</span> <span class="o">=</span> <span class="n">total_return</span> <span class="o">/</span> <span class="n">num_episodes</span>
+  <span class="k">return</span> <span class="n">avg_return</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># See also the metrics module for standard implementations of different metrics.</span>
+<span class="c1"># https://github.com/tensorflow/agents/tree/master/tf_agents/metrics</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Running this computation on the <code>random_policy</code> shows a baseline performance in the environment.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">NUM_EVAL_EPISODES</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>10</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">compute_avg_return</span><span class="p">(</span><span class="n">eval_env</span><span class="p">,</span> <span class="n">random_policy</span><span class="p">,</span> <span class="n">NUM_EVAL_EPISODES</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>26.4</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="9.-Replay-Buffer">
+<a class="anchor" href="#9.-Replay-Buffer" aria-hidden="true"><span class="octicon octicon-link"></span></a>9. Replay Buffer<a class="anchor-link" href="#9.-Replay-Buffer"> </a>
+</h2>
+<p>The replay buffer keeps track of data collected from the environment. We will use <code>tf_agents.replay_buffers.tf_uniform_replay_buffer.TFUniformReplayBuffer</code>, as it is the most common.</p>
+<p>The constructor requires the specs for the data it will be collecting. This is available from the agent using the <code>collect_data_spec</code> method. The batch size and maximum buffer length are also required.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">replay_buffer</span> <span class="o">=</span> <span class="n">tf_uniform_replay_buffer</span><span class="o">.</span><span class="n">TFUniformReplayBuffer</span><span class="p">(</span>
+    <span class="n">data_spec</span><span class="o">=</span>  <span class="n">agent</span><span class="o">.</span><span class="n">collect_data_spec</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span> <span class="n">train_env</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">max_length</span><span class="o">=</span> <span class="n">REPLAY_BUFFER_MAX_LENGTH</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For most agents, <code>collect_data_spec</code> is a named tuple called <code>Trajectory</code>, containing the specs for observations, actions, rewards, and other items.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">agent</span><span class="o">.</span><span class="n">collect_data_spec</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Trajectory(step_type=TensorSpec(shape=(), dtype=tf.int32, name='step_type'), observation=BoundedTensorSpec(shape=(4,), dtype=tf.float32, name='observation', minimum=array([-4.8000002e+00, -3.4028235e+38, -4.1887903e-01, -3.4028235e+38],
+      dtype=float32), maximum=array([4.8000002e+00, 3.4028235e+38, 4.1887903e-01, 3.4028235e+38],
+      dtype=float32)), action=BoundedTensorSpec(shape=(), dtype=tf.int64, name='action', minimum=array(0), maximum=array(1)), policy_info=(), next_step_type=TensorSpec(shape=(), dtype=tf.int32, name='step_type'), reward=TensorSpec(shape=(), dtype=tf.float32, name='reward'), discount=BoundedTensorSpec(shape=(), dtype=tf.float32, name='discount', minimum=array(0., dtype=float32), maximum=array(1., dtype=float32)))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">agent</span><span class="o">.</span><span class="n">collect_data_spec</span><span class="o">.</span><span class="n">_fields</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>('step_type',
+ 'observation',
+ 'action',
+ 'policy_info',
+ 'next_step_type',
+ 'reward',
+ 'discount')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="10.-Data-Collection">
+<a class="anchor" href="#10.-Data-Collection" aria-hidden="true"><span class="octicon octicon-link"></span></a>10. Data Collection<a class="anchor-link" href="#10.-Data-Collection"> </a>
+</h2>
+<p>Now we execute the random policy in the environment for a few steps, recording the data in the replay buffer.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">collect_step</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">pol</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+  <span class="n">tstep</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">current_time_step</span><span class="p">()</span>
+  <span class="n">pstep</span> <span class="o">=</span> <span class="n">pol</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
+  <span class="n">next_tstep</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">pstep</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+  <span class="n">traj</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">from_transition</span><span class="p">(</span><span class="n">tstep</span><span class="p">,</span> <span class="n">pstep</span><span class="p">,</span> <span class="n">next_tstep</span><span class="p">)</span>
+  <span class="n">buffer</span><span class="o">.</span><span class="n">add_batch</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="c1"># Add trajectory to the replay buffer</span>
+
+<span class="k">def</span> <span class="nf">collect_data</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">pol</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+    <span class="n">collect_step</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">pol</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+
+<span class="n">collect_data</span><span class="p">(</span><span class="n">train_env</span><span class="p">,</span> <span class="n">random_policy</span><span class="p">,</span> <span class="n">replay_buffer</span><span class="p">,</span> <span class="n">INITIAL_COLLECT_STEPS</span><span class="p">)</span>
+
+<span class="c1"># This loop is so common in RL, that we provide standard implementations. </span>
+<span class="c1"># For more details see the drivers module.</span>
+<span class="c1"># https://www.tensorflow.org/agents/api_docs/python/tf_agents/drivers</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The replay buffer is now a collection of Trajectories. Let's inspect one of the Trajectories:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">traj</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">replay_buffer</span><span class="o">.</span><span class="n">as_dataset</span><span class="p">())</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">traj</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">traj</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class 'tuple'&gt;
+2
+(Trajectory(step_type=&lt;tf.Tensor: shape=(), dtype=int32, numpy=1&gt;, observation=&lt;tf.Tensor: shape=(4,), dtype=float32, numpy=array([-0.01126854, -0.16798736,  0.10049265,  0.40535218], dtype=float32)&gt;, action=&lt;tf.Tensor: shape=(), dtype=int64, numpy=0&gt;, policy_info=(), next_step_type=&lt;tf.Tensor: shape=(), dtype=int32, numpy=1&gt;, reward=&lt;tf.Tensor: shape=(), dtype=float32, numpy=1.0&gt;, discount=&lt;tf.Tensor: shape=(), dtype=float32, numpy=1.0&gt;), BufferInfo(ids=&lt;tf.Tensor: shape=(), dtype=int64, numpy=34&gt;, probabilities=&lt;tf.Tensor: shape=(), dtype=float32, numpy=0.01&gt;))
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Trajectory(step_type=&lt;tf.Tensor: shape=(), dtype=int32, numpy=1&gt;, observation=&lt;tf.Tensor: shape=(4,), dtype=float32, numpy=array([-0.01126854, -0.16798736,  0.10049265,  0.40535218], dtype=float32)&gt;, action=&lt;tf.Tensor: shape=(), dtype=int64, numpy=0&gt;, policy_info=(), next_step_type=&lt;tf.Tensor: shape=(), dtype=int32, numpy=1&gt;, reward=&lt;tf.Tensor: shape=(), dtype=float32, numpy=1.0&gt;, discount=&lt;tf.Tensor: shape=(), dtype=float32, numpy=1.0&gt;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tf_agents.trajectories.trajectory.Trajectory</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_fields</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>('step_type',
+ 'observation',
+ 'action',
+ 'policy_info',
+ 'next_step_type',
+ 'reward',
+ 'discount')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'step_type:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">step_type</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'observation:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">observation</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'action:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'policy_info:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">policy_info</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'next_step_type:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">next_step_type</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'reward:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'discount:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">discount</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>step_type: tf.Tensor(1, shape=(), dtype=int32)
+observation: tf.Tensor([-0.01126854 -0.16798736  0.10049265  0.40535218], shape=(4,), dtype=float32)
+action: tf.Tensor(0, shape=(), dtype=int64)
+policy_info: ()
+next_step_type: tf.Tensor(1, shape=(), dtype=int32)
+reward: tf.Tensor(1.0, shape=(), dtype=float32)
+discount: tf.Tensor(1.0, shape=(), dtype=float32)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">traj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>BufferInfo(ids=&lt;tf.Tensor: shape=(), dtype=int64, numpy=34&gt;, probabilities=&lt;tf.Tensor: shape=(), dtype=float32, numpy=0.01&gt;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">traj</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tf_agents.replay_buffers.tf_uniform_replay_buffer.BufferInfo</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">traj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_fields</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>('ids', 'probabilities')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'ids:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'probabilities:'</span><span class="p">,</span> <span class="n">traj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">probabilities</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>ids: tf.Tensor(34, shape=(), dtype=int64)
+probabilities: tf.Tensor(0.01, shape=(), dtype=float32)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The agent needs access to the replay buffer. TF-Agents provide this access by creating an iterable <code>tf.data.Dataset</code> pipeline which will feed data to the agent.</p>
+<p>Each row of the replay buffer only stores a single observation step. But since the DQN Agent needs both the current and next observation to compute the loss, the dataset pipeline will sample two adjacent rows for each item in the batch (<code>num_steps=2</code>).</p>
+<p>The code also optimize this dataset by running parallel calls and prefetching data.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">replay_buffer</span><span class="o">.</span><span class="n">as_dataset</span><span class="p">(</span>
+    <span class="n">num_parallel_calls</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
+    <span class="n">sample_batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span> 
+    <span class="n">num_steps</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">dataset</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;PrefetchDataset shapes: (Trajectory(step_type=(64, 2), observation=(64, 2, 4), action=(64, 2), policy_info=(), next_step_type=(64, 2), reward=(64, 2), discount=(64, 2)), BufferInfo(ids=(64, 2), probabilities=(64,))), types: (Trajectory(step_type=tf.int32, observation=tf.float32, action=tf.int64, policy_info=(), next_step_type=tf.int32, reward=tf.float32, discount=tf.float32), BufferInfo(ids=tf.int64, probabilities=tf.float32))&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;tensorflow.python.data.ops.iterator_ops.OwnedIterator object at 0x7f1cd88b10f0&gt;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># to the collection of individual trajectories shown earlier:</span>
+<span class="c1"># iterator.next()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="11.-Training-the-agent">
+<a class="anchor" href="#11.-Training-the-agent" aria-hidden="true"><span class="octicon octicon-link"></span></a>11. Training the agent<a class="anchor-link" href="#11.-Training-the-agent"> </a>
+</h2>
+<p>Two things must happen during the training loop:</p>
+<ul>
+<li>collect data from the environment</li>
+<li>use that data to train the agent's neural network(s)</li>
+</ul>
+<p>This example also periodicially evaluates the policy and prints the current score.</p>
+<p>The following will take ~5 minutes to run.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># initial_collect_steps = 100  # @param {type:"integer"} </span>
+<span class="c1"># collect_steps_per_iteration = 1  # @param {type:"integer"}</span>
+<span class="c1"># replay_buffer_max_length = 100000  # @param {type:"integer"}</span>
+
+<span class="c1"># batch_size = 64  # @param {type:"integer"}</span>
+<span class="c1"># learning_rate = 1e-3  # @param {type:"number"}</span>
+<span class="c1"># log_interval = 200  # @param {type:"integer"}</span>
+
+<span class="c1"># num_eval_episodes = 10  # @param {type:"integer"}</span>
+<span class="c1"># eval_interval = 1000  # @param {type:"integer"}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">NUM_ITERATIONS</span> <span class="o">=</span> <span class="mi">20000</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span>
+  <span class="o">%%time</span>
+<span class="k">except</span><span class="p">:</span>
+  <span class="k">pass</span>
+
+<span class="c1"># (Optional) Optimize by wrapping some of the code in a graph using TF function.</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">train</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">train</span><span class="p">)</span>
+
+<span class="c1"># Reset the train step</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">train_step_counter</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Evaluate the agent's policy once before training.</span>
+<span class="n">avg_return</span> <span class="o">=</span> <span class="n">compute_avg_return</span><span class="p">(</span><span class="n">eval_env</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">NUM_EVAL_EPISODES</span><span class="p">)</span>
+<span class="n">returns</span> <span class="o">=</span> <span class="p">[</span><span class="n">avg_return</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_ITERATIONS</span><span class="p">):</span>
+  <span class="c1"># Collect a few steps using collect_policy and save to the replay buffer</span>
+  <span class="n">collect_data</span><span class="p">(</span><span class="n">train_env</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">collect_policy</span><span class="p">,</span> <span class="n">replay_buffer</span><span class="p">,</span> <span class="n">COLLECT_STEPS_PER_ITERATION</span><span class="p">)</span>
+
+  <span class="c1"># Sample a batch of data from the buffer and update the agent's network</span>
+  <span class="n">experience</span><span class="p">,</span> <span class="n">unused_info</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+  <span class="n">train_loss</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">experience</span><span class="p">)</span><span class="o">.</span><span class="n">loss</span>
+
+  <span class="n">step</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">train_step_counter</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+  <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="n">LOG_INTERVAL</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'step = </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s1">: loss = </span><span class="si">{</span><span class="n">train_loss</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="n">EVAL_INTERVAL</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">avg_return</span> <span class="o">=</span> <span class="n">compute_avg_return</span><span class="p">(</span><span class="n">eval_env</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">NUM_EVAL_EPISODES</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'step = </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s1">: Average Return = </span><span class="si">{</span><span class="n">avg_return</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">returns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg_return</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>CPU times: user 2 µs, sys: 0 ns, total: 2 µs
+Wall time: 5.96 µs
+step = 200: loss = 195.16213989257812
+step = 400: loss = 226.61244201660156
+step = 600: loss = 274.764892578125
+step = 800: loss = 42.2076416015625
+step = 1000: loss = 6.291749954223633
+step = 1000: Average Return = 33.79999923706055
+step = 1200: loss = 50.53717803955078
+step = 1400: loss = 36.393985748291016
+step = 1600: loss = 172.8566436767578
+step = 1800: loss = 11.371061325073242
+step = 2000: loss = 18.2037353515625
+step = 2000: Average Return = 72.80000305175781
+step = 2200: loss = 54.74932861328125
+step = 2400: loss = 16.711841583251953
+step = 2600: loss = 3.500059127807617
+step = 2800: loss = 7.880290985107422
+step = 3000: loss = 8.416237831115723
+step = 3000: Average Return = 95.5999984741211
+step = 3200: loss = 607.7373657226562
+step = 3400: loss = 5.996950149536133
+step = 3600: loss = 54.01152801513672
+step = 3800: loss = 238.8196258544922
+step = 4000: loss = 21.115650177001953
+step = 4000: Average Return = 71.80000305175781
+step = 4200: loss = 247.99981689453125
+step = 4400: loss = 326.7658996582031
+step = 4600: loss = 8.009516716003418
+step = 4800: loss = 228.2291717529297
+step = 5000: loss = 10.485452651977539
+step = 5000: Average Return = 175.89999389648438
+step = 5200: loss = 217.0672607421875
+step = 5400: loss = 200.13392639160156
+step = 5600: loss = 202.6009521484375
+step = 5800: loss = 5.376280784606934
+step = 6000: loss = 5.735952377319336
+step = 6000: Average Return = 198.10000610351562
+step = 6200: loss = 54.103065490722656
+step = 6400: loss = 89.71216583251953
+step = 6600: loss = 77.9834213256836
+step = 6800: loss = 276.6645812988281
+step = 7000: loss = 261.430419921875
+step = 7000: Average Return = 195.0
+step = 7200: loss = 92.05532836914062
+step = 7400: loss = 13.44973373413086
+step = 7600: loss = 31.970050811767578
+step = 7800: loss = 18.705116271972656
+step = 8000: loss = 148.3210906982422
+step = 8000: Average Return = 198.60000610351562
+step = 8200: loss = 12.089221954345703
+step = 8400: loss = 275.4737854003906
+step = 8600: loss = 461.70880126953125
+step = 8800: loss = 740.7882690429688
+step = 9000: loss = 15.471342086791992
+step = 9000: Average Return = 200.0
+step = 9200: loss = 13.399641990661621
+step = 9400: loss = 23.77669906616211
+step = 9600: loss = 16.250200271606445
+step = 9800: loss = 18.584796905517578
+step = 10000: loss = 15.69692325592041
+step = 10000: Average Return = 200.0
+step = 10200: loss = 746.649169921875
+step = 10400: loss = 573.50390625
+step = 10600: loss = 28.51150131225586
+step = 10800: loss = 793.2840576171875
+step = 11000: loss = 26.583303451538086
+step = 11000: Average Return = 200.0
+step = 11200: loss = 878.364501953125
+step = 11400: loss = 25.9678955078125
+step = 11600: loss = 1178.5902099609375
+step = 11800: loss = 652.8362426757812
+step = 12000: loss = 660.1619262695312
+step = 12000: Average Return = 200.0
+step = 12200: loss = 35.75788497924805
+step = 12400: loss = 665.1995239257812
+step = 12600: loss = 21.658220291137695
+step = 12800: loss = 34.46709060668945
+step = 13000: loss = 1340.4808349609375
+step = 13000: Average Return = 200.0
+step = 13200: loss = 2181.42626953125
+step = 13400: loss = 37.67461395263672
+step = 13600: loss = 3320.109130859375
+step = 13800: loss = 3381.054443359375
+step = 14000: loss = 670.6203002929688
+step = 14000: Average Return = 200.0
+step = 14200: loss = 43.05519485473633
+step = 14400: loss = 54.9406852722168
+step = 14600: loss = 43.494712829589844
+step = 14800: loss = 1596.6024169921875
+step = 15000: loss = 34.50205993652344
+step = 15000: Average Return = 200.0
+step = 15200: loss = 48.124488830566406
+step = 15400: loss = 61.94905471801758
+step = 15600: loss = 80.75376892089844
+step = 15800: loss = 57.689796447753906
+step = 16000: loss = 4747.44921875
+step = 16000: Average Return = 200.0
+step = 16200: loss = 3647.16845703125
+step = 16400: loss = 2504.968994140625
+step = 16600: loss = 58.82946014404297
+step = 16800: loss = 93.2029800415039
+step = 17000: loss = 3273.479248046875
+step = 17000: Average Return = 200.0
+step = 17200: loss = 2719.405517578125
+step = 17400: loss = 109.44195556640625
+step = 17600: loss = 267.1567687988281
+step = 17800: loss = 120.11451721191406
+step = 18000: loss = 3119.292724609375
+step = 18000: Average Return = 200.0
+step = 18200: loss = 62.79007339477539
+step = 18400: loss = 1214.75830078125
+step = 18600: loss = 73.04971313476562
+step = 18800: loss = 141.36680603027344
+step = 19000: loss = 112.62451934814453
+step = 19000: Average Return = 200.0
+step = 19200: loss = 7514.24609375
+step = 19400: loss = 7860.0087890625
+step = 19600: loss = 65.12687683105469
+step = 19800: loss = 3710.064697265625
+step = 20000: loss = 3101.4462890625
+step = 20000: Average Return = 200.0
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Visualization">
+<a class="anchor" href="#Visualization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Visualization<a class="anchor-link" href="#Visualization"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Plots">
+<a class="anchor" href="#Plots" aria-hidden="true"><span class="octicon octicon-link"></span></a>Plots<a class="anchor-link" href="#Plots"> </a>
+</h3>
+<p>Use <code>matplotlib.pyplot</code> to chart how the policy improved during training.</p>
+<p>One iteration of <code>Cartpole-v0</code> consists of 200 time steps. The environment gives a reward of <code>+1</code> for each step the pole stays up, so the maximum return for one episode is 200. The charts shows the return increasing towards that maximum each time it is evaluated during training. (It may be a little unstable and not increase monotonically each time.)</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">iterations</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">NUM_ITERATIONS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">EVAL_INTERVAL</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iterations</span><span class="p">,</span> <span class="n">returns</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Average Return'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Iterations'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(15.725, 250.0)</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Videos">
+<a class="anchor" href="#Videos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Videos<a class="anchor-link" href="#Videos"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Charts are nice. But more exciting is seeing an agent actually performing a task in an environment.</p>
+<p>First, create a function to embed videos in the notebook.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">embed_mp4</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+  <span class="sd">"""Embeds an mp4 file in the notebook."""</span>
+  <span class="n">video</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">'rb'</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+  <span class="n">b64</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
+  <span class="n">tag</span> <span class="o">=</span> <span class="s1">'''</span>
+<span class="s1">  &lt;video width="640" height="480" controls&gt;</span>
+<span class="s1">    &lt;source src="data:video/mp4;base64,</span><span class="si">{0}</span><span class="s1">" type="video/mp4"&gt;</span>
+<span class="s1">  Your browser does not support the video tag.</span>
+<span class="s1">  &lt;/video&gt;'''</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b64</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+  <span class="k">return</span> <span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">HTML</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now iterate through a few episodes of the Cartpole game with the agent. The underlying Python environment (the one "inside" the TensorFlow environment wrapper) provides a <code>render()</code> method, which outputs an image of the environment state. These can be collected into a video.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">create_policy_eval_video</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">num_episodes</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+  <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">".mp4"</span>
+  <span class="k">with</span> <span class="n">imageio</span><span class="o">.</span><span class="n">get_writer</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">)</span> <span class="k">as</span> <span class="n">video</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_episodes</span><span class="p">):</span>
+      <span class="n">time_step</span> <span class="o">=</span> <span class="n">eval_env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+      <span class="n">video</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">eval_py_env</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+      <span class="k">while</span> <span class="ow">not</span> <span class="n">time_step</span><span class="o">.</span><span class="n">is_last</span><span class="p">():</span>
+        <span class="n">action_step</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">time_step</span><span class="p">)</span>
+        <span class="n">time_step</span> <span class="o">=</span> <span class="n">eval_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action_step</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+        <span class="n">video</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">eval_py_env</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+  <span class="k">return</span> <span class="n">embed_mp4</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For fun, compare the trained agent (above) to an agent moving randomly. (It does not do as well.)</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="ClosedLoopAI/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/control/rl/tensorflow/tf-agents/python/2021/01/19/TF_Agents_CartPole.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/ClosedLoopAI" title="ClosedLoopAI"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/fastdotai" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
