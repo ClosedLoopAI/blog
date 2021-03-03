@@ -76,9 +76,50 @@ One of the many success stories in applying social media marketing is the case o
 
 Engineering 360 (2019). Retrieved June 17, 2019, from [https://www.globalspec.com/](https://www.globalspec.com/)
 
+Wilinsky, D. (2014, September). IHS Introduces Engineering360, the World’s Largest Online
+Destination for Engineers. Retrieved from https://news.ihsmarkit.com/press-release/product-design/ihs-introduces-engineering360-worlds-largest-online-destination-enginee 
 
+5 Online Communities About the Aviation Industry You Should Join. [http://www.aviationmaintenance.edu/blog/aviation-industry/5-online-communities-aviation-industry-join/](https://aviationmaintenance.edu/2014/05/21/5-online-communities-aviation-industry-join/)
 
+15 Aerospace Industry Professionals You Should Be Following on Social Media. [https://www.cuttingdynamics.com/industry-professionals-you-should-follow-on-social-media/](https://www.cuttingdynamics.com/industry-professionals-you-should-follow-on-social-media/)
 
+Knoblich, S., Martin, A., Nash, R., & Stansbie, P. (2017). Keys to success in Social Media Marketing (SMM) – Prospects for the German airline industry. *Tourism and Hospitality Research*, 17(2), 147–164. https://doi.org/10.1177/1467358415610415
+
+Ben-Lhachemi, N. & Nfaoui, E. (2018). Using Tweets Embeddings For Hashtag Recommendation in Twitter. *Procedia Computer Science*, 127(2018), 7–15.
+
+Collobert, R. & Weston, J. (2008). A unified architecture for natural language processing: Deep neural networks with multitask learning.  In *Proceedings of the 25th International Conference on Machine Learning*, Helsinki, Finland, 2008.
+
+Arora, S. Liang, Y., Ma, T. (2017). A SIMPLE BUT TOUGH-TO-BEAT BASELINE FOR SENTENCE EMBEDDINGS. *Submitted to ICLR 2017 conference*. 
+
+Iyyer, M., Manjunatha V., Boyd-Graber, J., Daumé, H. III. (2015). Deep unordered compositionrivals syntactic methods for text classification. *Proceedings of the Association forComputational Linguistics*, 2015.
+
+Le, Q. & Mikolov, T. Distributed representations of sentences and documents. In *Proceedings of The 31st International Conference on Machine Learning*, 2014.
+
+Kiros, R., Zhu, Y, Salakhutdinov, R., Zemel, R., Urtasun, R, Torralba, A., Fidler, S. Skip-thought vectors. In *Advances in neural information processing systems*, 2015.
+
+Socher, R., Huang, E. H., Pennin, J., Manning, C. D., Ng, A. Y. Dynamic pooling and unfolding recursive autoencoders for paraphrase detection. In *Advances in Neural Information Processing Systems*, 2011.
+
+Blunsom, P., Grefenstette, E., Kalchbrenner, N. A convolutional neural network for modelling sentences. In *Proceedings of the 52nd Annual Meeting of the Association for Computational Linguistics*, 2014.
+
+Tai, K. S., Socher, R., Manning, C. D. Improved semantic representations from tree-structured long short-term memory networks. *arXiv preprint arXiv:1503.00075*, 2015.
+
+Wang, Y., Huang, H., Feng, C., Zhou, Q., Gu, J., Gao, X. Cse: Conceptual sentence embeddings based on attention model. In *Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2016.
+
+Lexalytics.com: [https://www.lexalytics.com/](https://www.lexalytics.com/)
+
+Salesforce Radian6: [https://socialstudio.radian6.com](https://socialstudio.radian6.com/)
+
+IBM Cloud: [https://www.ibm.com/cloud/](https://www.ibm.com/cloud)
+
+AviationBusinessConsultants.com: [https://aviationbusinessconsultants.com](https://aviationbusinessconsultants.com/)
+
+Ansys: [https://www.ansys.com/solutions/solutions-by-industry/aerospace-and-defense](https://www.ansys.com/solutions/solutions-by-industry/aerospace)
+
+Sprout Social CASE STUDIES: How Simply Measured Continues to Help ANSYS Grow Their Social Engagement by 19% Year-Over-Year. [https://sproutsocial.com/insights/case-studies/ansys/](https://sproutsocial.com/insights/case-studies/)
+
+Seo & Park (2018). A Study on the Effects of Social Media Marketing Activities on Brand Equity and Customer Response in the Airline Industry. *Journal of Air Transport Management 66* (2018): 36-41. Web.
+
+Studies in the Area of Air Transport Management Reported from Korea Aerospace University. *Marketing Weekly News* (2018): 66. Web.
 
 
 
