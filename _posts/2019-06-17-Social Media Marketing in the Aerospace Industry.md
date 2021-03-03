@@ -26,7 +26,7 @@ Social media technology has a number of key terms. The first term is *documents*
 Although overloaded, this term has a specific technical meaning in social media. A document is a “post” or entry on a social media site, submitted at a specific time. A good example is a “tweet” on the Twitter platform. Even though such an entry is very short and hardly qualifies as a “document” in the traditional sense of the word, it is referred to as a social media *document*.
 
 ### Hashtags
-A hashtag serves as a classifier of a document. A document could have more than one hashtag, or it could have none. Hashtags need to start with the “#” character followed by a number of characters excluding spaces and punctuation, for example, #aerospaceengineering, or #AerospaceEngineering but *not* #aerospace engineering. Users of social media platforms are often allowed to invent their own hashtags. 
+A hashtag serves as a classifier of a document. A document could have more than one hashtag, or it could have none. Hashtags need to start with the “#” character followed by a number of characters excluding spaces and punctuation, for example, `#aerospaceengineering`, or `#AerospaceEngineering` but *not* `#aerospace engineering`. Users of social media platforms are often allowed to invent their own hashtags. 
 
 ### Analysis of social media data
 
