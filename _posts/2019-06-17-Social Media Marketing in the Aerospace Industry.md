@@ -59,7 +59,22 @@ Having the coordinates of the document’s *embedding vector*, allows the docume
 By calculating the distance between the social document and all other relevant cluster centroids a determination can be made of where the document belongs. Company defined centroid clusters are usually most relevant in revealing where the document belongs. It usually works best to identify a ranked list of, say, the top 3 closest centroids. For outward engagement communication, it may be helpful to also add widely recognized hashtags used in the aerospace industry, for example, `#aerospaceengineering`. 
 
 ## Execution of social media marketing
+Aerospace marketers often do not have the in-house expertise to perform the highly technical analyses referred to above. For this they tend to turn to outsourced solutions. Some of the bigger service providers are [Lexalytics](https://www.lexalytics.com/), Sales Force’s [Radian 6](https://socialstudio.radian6.com/), and [IBM Cloud](https://www.ibm.com/cloud). Sometimes marketers partner at a higher level, for example, [AviationBusinessConsultants.com](https://aviationbusinessconsultants.com/). 
 
+There is also support from trade publications, for example, the paper in 2017 by Knoblich, Martin, Nash, and Stansbie that covers the German market, as well as the Seo and Park (2018) paper. The *Marketing Weekly News* article in 2018, “Studies in the Area of Air Transport Management Reported from Korea Aerospace University” looks at the effects of social marketing in the airline industry in Korea. 
+
+In the end, it does not matter who does the in-depth technical analysis. What is important is how accurately incoming social media data can be analyzed and how accurately outgoing marketing type data can be focused on where it has the most impact.
+
+## Advantages of social media marketing in the aerospace industry
+A well-crafted social media marketing plan provides substantial advantages for the aerospace industry. By engaging high value audiences associated with virtual communities related to aerospace, companies that embrace these modern approaches experience significant benefits. It allows marketers to make serious business of engagement marketing and nurture marketing. This includes building long-term relationships as well as one-to-one relationships. 
+
+In the case of engagement marketing the emphasis is on exceptional content and the aim is for marketing to go viral. The objective is to establish a social presence and it allows for relationships to be anonymous. Measurement of success rates are in the form of social metrics (e.g. likes, views, opens, click-throughs, etc.). In the case of nurture marketing, however, content impact is somewhat relaxed although it is required to be relevant. Marketing is now bi-directional and the objective is to establish sales relationships rather than to just have a social presence. At the same time, these relationships are not anonymous anymore but are of the nurture kind. Measurement of success rates are in the form of sales metrics (rather than social metrics).
+
+One of the many success stories in applying social media marketing is the case of [Ansys](https://www.ansys.com/solutions/solutions-by-industry/aerospace) who specializes in advanced engineering simulation software used in the aerospace industry [https://sproutsocial.com/insights/case-studies/ansys/](https://sproutsocial.com/insights/case-studies/). The social engagement of Ansys keeps growing at a 19% year-over-year rate. Against a mostly manufacturing background that sprang from the industrial age, it is encouraging to notice the gradual adoption of social media marketing by aerospace marketers. They may not be as agile as marketers in the food industry, or the retail industry, but they are awakening to the advantages of social media marketing.
+
+## References
+
+Engineering 360 (2019). Retrieved June 17, 2019, from [https://www.globalspec.com/](https://www.globalspec.com/)
 
 
 
