@@ -4,7 +4,7 @@ layout: post
 description: Bias in data leads to bias in model behavior
 image: images/womd.jpeg
 categories: [Data_Ethics]
-title: Response to Cathy O’Neil’s *Weapons of Math Destruction*
+title: Response to Cathy O’Neil’s Weapons of Math Destruction
 ---
 
 After reading Cathy O’Neil’s [Weapons of Math Destruction](https://www.amazon.com/Weapons-Math-Destruction-Increases-Inequality/dp/0553418815), I put down a few comments. Overall, I was impressed by O’Neil’s insight, honesty, sense of responsibility, and ethical focus. Her writing style is to the point, yet wrapped in artistic expression. To get going, she reveals a fundamental principle and problem with model creation: Models are opinions embedded in mathematics. By making choices over the data we collect, the questions we ask, and what data to include or exclude eventually, we impose our ideologies on the models we build. Often we also teach machines how to discriminate, and from then on they perform this disservice extremely efficiently. We allow our machines to capture poisonous prejudices from the past which embed within them the practice of being unfair. 
