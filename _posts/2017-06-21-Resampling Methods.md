@@ -1,5 +1,5 @@
 ---
-toc: true
+toc: false
 layout: post
 title: Resampling Methods
 description: Departing from strict theoretical principles, basing inferences on statistics obtained from repeated resampling of the same sample.
