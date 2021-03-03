@@ -5,7 +5,6 @@ description: Social Media Marketing in the Aerospace Industry
 categories: [markdown]
 title: The Use of Social Media Marketing in the Aerospace Industry
 ---
-# The Use of Social Media Marketing in the Aerospace Industry
 
 ## Abstract
 This report considers the role of social media marketing in the aerospace industry. What is not always obvious from casual readings on this subject is the highly technical underpinnings of the effective use of this marketing approach. Aerospace marketers often outsource the detailed technical analysis to social media marketers which tend to use deep learning to perform this. These service providers seem to operate as custodians of black boxes.
@@ -77,7 +76,7 @@ One of the many success stories in applying social media marketing is the case o
 Engineering 360 (2019). Retrieved June 17, 2019, from [https://www.globalspec.com/](https://www.globalspec.com/)
 
 Wilinsky, D. (2014, September). IHS Introduces Engineering360, the World’s Largest Online
-Destination for Engineers. Retrieved from https://news.ihsmarkit.com/press-release/product-design/ihs-introduces-engineering360-worlds-largest-online-destination-enginee 
+Destination for Engineers. Retrieved from [https://www.businesswire.com/news/home/20140925005599/en/IHS-Introduces-Engineering360-the-World%E2%80%99s-Largest-Online-Destination-for-Engineers](https://www.businesswire.com/news/home/20140925005599/en/IHS-Introduces-Engineering360-the-World%E2%80%99s-Largest-Online-Destination-for-Engineers) 
 
 5 Online Communities About the Aviation Industry You Should Join. [http://www.aviationmaintenance.edu/blog/aviation-industry/5-online-communities-aviation-industry-join/](https://aviationmaintenance.edu/2014/05/21/5-online-communities-aviation-industry-join/)
 
