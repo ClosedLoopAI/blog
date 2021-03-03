@@ -91,7 +91,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      7 min read
     
 </span></p>
 
@@ -124,7 +124,14 @@ window.onload = wrap_img;
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#the-use-of-hashtags">The Use of Hashtags</a></li>
-<li class="toc-entry toc-h2"><a href="#the-use-of-deep-learning-and-embeddings">The use of Deep Learning and Embeddings</a></li>
+<li class="toc-entry toc-h2"><a href="#the-use-of-deep-learning-and-embeddings">The use of Deep Learning and Embeddings</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#calculate-social-document-embeddings">Calculate social document embeddings</a></li>
+<li class="toc-entry toc-h3"><a href="#place-the-social-document-in-semantic-space">Place the social document in semantic space</a></li>
+<li class="toc-entry toc-h3"><a href="#compute-the-distance-between-the-social-document-and-all-other-relevant-cluster-centroids">Compute the distance between the social document and all other relevant cluster centroids</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#execution-of-social-media-marketing">Execution of social media marketing</a></li>
 </ul>
 </li>
 </ul><h1 id="the-use-of-social-media-marketing-in-the-aerospace-industry">
@@ -163,16 +170,36 @@ window.onload = wrap_img;
 
 <h2 id="the-use-of-hashtags">
 <a class="anchor" href="#the-use-of-hashtags" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Use of Hashtags</h2>
-<p>The use of hashtags is important in the analysis of social media data. The short blog, <a href="https://blog.catmedia.com/lessons-from-the-aviation-industry-using-hashtags-to-help-boost-social-media-marketing">LESSONS FROM THE AVIATION INDUSTRY: USING HASHTAGS TO HELP BOOST SOCIAL MEDIA MARKETING</a>, gives some insights into its use. According to the site <a href="http://best-hashtags.com/hashtag/aerospace/">best-hashtags.com</a> the current top 10 aerospace hashtags are as shown in Figure 1.</p>
+<p>The use of hashtags is important in the analysis of social media data. The short blog, <a href="https://blog.catmedia.com/lessons-from-the-aviation-industry-using-hashtags-to-help-boost-social-media-marketing">LESSONS FROM THE AVIATION INDUSTRY: USING HASHTAGS TO HELP BOOST SOCIAL MEDIA MARKETING</a>, gives some insights into its use. According to the site <a href="http://best-hashtags.com/hashtag/aerospace/">best-hashtags.com</a> the current top 10 aerospace hashtags are as shown in Figure 1. Some issues with relying on hashtags are immediately obvious. For example, the hashtag #engineering has strong overlaps with other areas of engineering. The same is true for <code class="language-plaintext highlighter-rouge">#manufacturing</code>, <code class="language-plaintext highlighter-rouge">#robotics</code>, <code class="language-plaintext highlighter-rouge">#technology</code>, and <code class="language-plaintext highlighter-rouge">#military</code>. It is also curious that the hashtag <code class="language-plaintext highlighter-rouge">#aerospaceengineering</code>, which seems to have the most appropriate name, ranks at only 5%. Issues like these have turned some aerospace marketers away from relying strongly on the use of hashtags for analysis towards the use of <em>deep learning</em> and <em>text embeddings</em>. This serves as a more robust form of categorization. It also allows the analyst to discover the meaning of social media documents at a more in-depth level. This is the approach taken by, for example, Ben-Lhachemi and Nfaoui (2018). Although they use this approach to recommend more optimal hashtags, the essence of the paper is about using deep learning with embeddings.</p>
 
 <p><img src="/blog/images/fig1_Top%2010%20Aerospace%20Hashtags.png" alt="" title="Figure 1: Top 10 Aerospace Hashtags"></p>
-
-<p>Some issues with relying on hashtags are immediately obvious. For example, the hashtag #engineering has strong overlaps with other areas of engineering. The same is true for <code class="language-plaintext highlighter-rouge">#manufacturing</code>, <code class="language-plaintext highlighter-rouge">#robotics</code>, <code class="language-plaintext highlighter-rouge">#technology</code>, and <code class="language-plaintext highlighter-rouge">#military</code>. It is also curious that the hashtag <code class="language-plaintext highlighter-rouge">#aerospaceengineering</code>, which seems to have the most appropriate name, ranks at only 5%. Issues like these have turned some aerospace marketers away from relying strongly on the use of hashtags for analysis towards the use of <em>deep learning</em> and <em>text embeddings</em>. This serves as a more robust form of categorization. It also allows the analyst to discover the meaning of social media documents at a more in-depth level. This is the approach taken by, for example, Ben-Lhachemi and Nfaoui (2018). Although they use this approach to recommend more optimal hashtags, the essence of the paper is about using deep learning with embeddings.</p>
 
 <h2 id="the-use-of-deep-learning-and-embeddings">
 <a class="anchor" href="#the-use-of-deep-learning-and-embeddings" aria-hidden="true"><span class="octicon octicon-link"></span></a>The use of Deep Learning and Embeddings</h2>
 
+<p>The concept of <em>embeddings</em> goes hand-in-hand with categorical variables. Individual words in an aerospace related social media document can be considered “values” or categories of a “text” variable. The analyst gets to choose the number of dimensions in semantic space along which the words will be placed. This means each word gets an <em>embedding vector</em> of N dimensions and is placed inside an N-dimensional <em>semantic space</em>. Figure 2 shows an example of word embeddings (albeit not aerospace words), visualized in a 2-dimensional semantic space. The clustering of words in this space becomes key in identifying, relating, and analyzing the nature of the text.  The usefulness of word embeddings was first described by Collobert and Weston (2008).</p>
+
 <p><img src="/blog/images/fig2_Word%20embeddings%20in%20a%20semantic%20space.png" alt="" title="Figure 2: Example of word embeddings in a semantic space (visualized in 2 dimenstions)"></p>
+
+<p>Ben-Lhachemi and Nfaoui (2018) realize that using word embeddings as such does not go far enough. The <em>combined</em> meaning of all the words in a tweet should somehow be captured in a single tweet embedding. The question is how to combine individual word embeddings. To address this, they made use of the work by Arora, Liang, and Ma (2017). This paper describes a simple but tough-to-beat technique to create <em>sentence embeddings</em>. In other words, it shows how to combine individual word embeddings and consolidate them into a single sentence embedding. Ben-Lhachemi and Nfaoui (2018) equated their collection of words (a tweet) to a sentence. Combining word embeddings was not invented by Arora et al. (2017). Similar approaches (that include the combination of word embeddings in terms of phrases, sentences, and even paragraphs) were described by Iyyer, Manjunatha, Boyd-Graber, and Daumé III (2015), Le and Mikolov (2014), Kiros et al. (2015), Socher, Huang, Pennin, Manning, and Ng (2011), Blunsom, Grefenstette, and Kalchbrenner (2014), Tai, Socher, and Manning (2015), and Wang et al. (2016).</p>
+
+<p>The next step for aerospace marketers is to apply the technique described in Ben-Lhachemi and Nfaoui (2018), or described elsewhere in similar papers, to bolster the analysis abilities of their automated systems.</p>
+
+<h3 id="calculate-social-document-embeddings">
+<a class="anchor" href="#calculate-social-document-embeddings" aria-hidden="true"><span class="octicon octicon-link"></span></a>Calculate social document embeddings</h3>
+
+<p>The first step is to calculate the consolidated embedding of the complete social document, be it a tweet or otherwise. Any of the above-mentioned approaches are used by aerospace marketers to various extents and with varying degrees of success.</p>
+
+<h3 id="place-the-social-document-in-semantic-space">
+<a class="anchor" href="#place-the-social-document-in-semantic-space" aria-hidden="true"><span class="octicon octicon-link"></span></a>Place the social document in semantic space</h3>
+<p>Having the coordinates of the document’s <em>embedding vector</em>, allows the document to be placed in semantic space. This action informs how close the semantics of the document is to the semantics of established aerospace hashtags. It also reveals the proximity to centroids of company defined embedding vectors.</p>
+
+<h3 id="compute-the-distance-between-the-social-document-and-all-other-relevant-cluster-centroids">
+<a class="anchor" href="#compute-the-distance-between-the-social-document-and-all-other-relevant-cluster-centroids" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compute the distance between the social document and all other relevant cluster centroids</h3>
+<p>By calculating the distance between the social document and all other relevant cluster centroids a determination can be made of where the document belongs. Company defined centroid clusters are usually most relevant in revealing where the document belongs. It usually works best to identify a ranked list of, say, the top 3 closest centroids. For outward engagement communication, it may be helpful to also add widely recognized hashtags used in the aerospace industry, for example, <code class="language-plaintext highlighter-rouge">#aerospaceengineering</code>.</p>
+
+<h2 id="execution-of-social-media-marketing">
+<a class="anchor" href="#execution-of-social-media-marketing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Execution of social media marketing</h2>
 
 
   </div><a class="u-url" href="/blog/markdown/2019/06/17/Social-Media-Marketing-in-the-Aerospace-Industry.html" hidden></a>
